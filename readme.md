@@ -136,3 +136,7 @@ GET http://localhost:3000/api/posts/5574901c61ed8bbc0ecca394
     created_at: "2015-06-07T18:40:28.729Z"
 }
 ```
+
+#### notes on Module-5:
+
+`postSchema` has a temporary fix of `created_by` - now of type String but must be a relation to `userSchema`. Should be noticed in readme.

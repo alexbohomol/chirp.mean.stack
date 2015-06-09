@@ -15,6 +15,7 @@ var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/test-chirp');
 
 // require web handlers
+var index = require('./routes/index');
 var api = require('./routes/api');
 var authenticate = require('./routes/authenticate')(passport);
 
@@ -40,6 +41,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // register web handlers for uri sub-pathes
+app.use('/', index);
 app.use('/api', api);
 app.use('/auth', authenticate);
 

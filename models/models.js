@@ -8,7 +8,8 @@ var userSchema = new Schema({
 });
 
 var postSchema = new Schema({
-    created_by: { type: Schema.ObjectId, ref: 'User' },
+    //created_by: { type: Schema.ObjectId, ref: 'User' },
+    created_by: String, // TODO: eventually, it must be a relation
     created_at: { type: Date, default: Date.now },
     text: String
 });
