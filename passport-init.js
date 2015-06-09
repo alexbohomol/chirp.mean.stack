@@ -1,21 +1,22 @@
+var mongoose = require('mongoose');
+var User = mongoose.model('User');
 var LocalStrategy = require('passport-local').Strategy;
 var bCrypt = require('bcrypt-nodejs');
-
-//temporary data store
-var users = {};
 
 module.exports = function(passport){
 
     passport.serializeUser(function(user, done) {
 
-        console.log('Serializing user:', user.username);
-        return done(null, user.username);
+        console.log('Serializing user: ', user.username);
+        return done(null, user._id);
     });
 
-    passport.deserializeUser(function(username, done) {
+    passport.deserializeUser(function(id, done) {
 
-        console.log('Deserializing user:', username);
-        return done(null, users[username]);
+        User.findById(id, function (err, user) {
+            console.log('Deserializing user: ', user.username);
+            return done(err, user);
+        });
     });
 
     passport.use('login', new LocalStrategy({
@@ -23,23 +24,36 @@ module.exports = function(passport){
         },
         function(req, username, password, done) {
 
-            var msg = '';
+            User.findOne({ 'username' :  username }, 
+                function(err, user) {
 
-            if(!users[username]){
-                msg = 'User Not Found with username: ' + username;
-                console.log(msg);
-                return done(msg, false);
-            }
+                    var msg = '';
 
-            if(!isValidPassword(users[username], password)){
-                msg = 'Invalid password for: ' + username;
-                console.log(msg);
-                return done(msg, false);
-            }
+                    if (err){
+                        console.log('Error on Login: ' + err);
+                        return done(err);
+                    }
 
-            msg = 'Sucessfully authenticated: ' + username;
-            console.log(msg);
-            return done(null, users[username]);
+                    if (!user){
+                        msg = 'User Not Found with username: ' + username;
+                        console.log(msg);
+                        return done(msg, false);
+                    }
+
+                    if (!isValidPassword(user, password)){
+                        msg = 'Invalid password for: ' + user.username;
+                        console.log(msg);
+                        return done(msg, false);
+                    }
+
+                    // User and password both match,
+                    // return user from done() method,
+                    // which will be treated like success
+                    msg = 'Sucessfully authenticated: ' + username;
+                    console.log(msg);
+                    return done(null, user);
+                }
+            );
         }
     ));
 
@@ -48,23 +62,41 @@ module.exports = function(passport){
         },
         function(req, username, password, done) {
 
-            var msg = '';
+            User.findOne({ 'username' :  username }, 
+                function(err, user) {
 
-            if (users[username]){
-                msg = 'User already exists with username: ' + username;
-                console.log(msg);
-                return done(msg, false);
-            }
+                    var msg = '';
 
-            //store user in memory
-            users[username] = {
-                username: username,
-                password: createHash(password)
-            }
+                    if (err){
+                        console.log('Error in SignUp: ' + err);
+                        return done(err);
+                    }
 
-            msg = 'Registration successful for: ' + username;
-            console.log(msg);
-            return done(null, users[username]);
+                    if (user) {
+                        msg = 'User already exists with username: ' + username;
+                        console.log(msg);
+                        return done(msg, false);
+                    }
+
+                    // if there is no user, create the user
+                    var newUser = new User();
+
+                    // set the user's local credentials
+                    newUser.username = username;
+                    newUser.password = createHash(password);
+
+                    // save the user
+                    newUser.save(function(err) {
+                        
+                        if (err){
+                            console.log('Error in Saving user: ' + err);  
+                            throw err;  
+                        }
+
+                        console.log('Registration successful for: ' + newUser.username);
+                        return done(null, newUser);
+                    });
+            });
         })
     );
 

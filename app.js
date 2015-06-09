@@ -9,6 +9,11 @@ var bodyParser = require('body-parser');
 var passport = require('passport');
 var session = require('express-session');
 
+// require mongoose-ODM and its models
+var models = require('./models/models');
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/test-chirp');
+
 // require web handlers
 var api = require('./routes/api');
 var authenticate = require('./routes/authenticate')(passport);
