@@ -5,9 +5,13 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+// require passport
+var passport = require('passport');
+var session = require('express-session');
+
 // require web handlers
 var api = require('./routes/api');
-//var authenticate = require('./routes/authenticate');
+var authenticate = require('./routes/authenticate')(passport);
 
 var app = express();
 
@@ -18,14 +22,25 @@ app.set('view engine', 'ejs');
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
+app.use(session({
+    secret: 'keyboard cat'
+}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// init the passport
+app.use(passport.initialize());
+app.use(passport.session());
+
 // register web handlers for uri sub-pathes
 app.use('/api', api);
-//app.use('/auth', authenticate);
+app.use('/auth', authenticate);
+
+// configure passport strategy
+var initPassport = require('./passport-init');
+initPassport(passport);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
