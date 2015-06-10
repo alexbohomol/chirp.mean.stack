@@ -1,12 +1,15 @@
 var app = angular.module('chirpApp', ['ngRoute', 'ngResource']).run(function ($http, $rootScope) {
-    $rootScope.authenticated = false;
-    $rootScope.current_user = '';
+    
+    $rootScope.userContext = {
+        authenticated: false,
+        username: ''
+    };
 
     $rootScope.signout = function(){
 
         $http.get('auth/signout');
-        $rootScope.authenticated = false;
-        $rootScope.current_user = '';
+        $rootScope.userContext.authenticated = false;
+        $rootScope.userContext.username = '';
     };
 });
 
@@ -38,7 +41,7 @@ app.controller('mainController', function($scope, postService, $rootScope){
 
     $scope.post = function(){
 
-        $scope.newPost.created_by = $rootScope.current_user;
+        $scope.newPost.created_by = $rootScope.userContext.username;
         $scope.newPost.created_at = Date.now();
         
         postService.save($scope.newPost, function () {
@@ -59,8 +62,8 @@ app.controller('authController', function($scope, $http, $rootScope, $location){
         $http.post('/auth/login', $scope.user).success(function(data){
 
             if(data.state == 'success'){
-                $rootScope.authenticated = true;
-                $rootScope.current_user = data.user.username;
+                $rootScope.userContext.authenticated = true;
+                $rootScope.userContext.username = data.user.username;
                 $location.path('/');
             }
             else{
@@ -74,8 +77,8 @@ app.controller('authController', function($scope, $http, $rootScope, $location){
         $http.post('/auth/signup', $scope.user).success(function(data){
 
             if(data.state == 'success'){
-                $rootScope.authenticated = true;
-                $rootScope.current_user = data.user.username;
+                $rootScope.userContext.authenticated = true;
+                $rootScope.userContext.username = data.user.username;
                 $location.path('/');
             }
             else{
