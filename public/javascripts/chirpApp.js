@@ -1,15 +1,73 @@
-var app = angular.module('chirpApp', ['ngRoute', 'ngResource']).run(function ($http, $rootScope) {
+var app = angular.module('chirpApp', ['ngRoute', 'ngResource', 'ngCookies']).run(function ($http, $rootScope, AuthService) {
+
+    $rootScope.userContext = AuthService.currentContext();
+
+    AuthService.signout(function (resp) {
+        
+        $rootScope.userContext = AuthService.currentContext();
+    });
+});
+
+app.factory('AuthService', function ($http, $cookieStore) {
     
-    $rootScope.userContext = {
-        authenticated: false,
-        username: ''
-    };
+    return {
 
-    $rootScope.signout = function(){
+        signin: function (credentials, callback) {
+            
+            $http.post('/auth/login', credentials).success(function (resp) {
+                
+                if (resp.state == 'success') {
+                    $cookieStore.put('usercontext', resp);
+                    callback(resp);
+                } else {
+                    $cookieStore.remove('usercontext');
+                    callback(resp);
+                };
+            });
+        },
 
-        $http.get('auth/signout');
-        $rootScope.userContext.authenticated = false;
-        $rootScope.userContext.username = '';
+        signup: function (credentials, callback) {
+            
+            $http.post('/auth/signup', credentials).success(function (resp) {
+                
+                if (resp.state == 'success') {
+                    $cookieStore.put('usercontext', resp);
+                    callback(resp);
+                } else {
+                    $cookieStore.remove('usercontext');
+                    callback(resp);
+                };
+            });
+        },
+
+        signout: function (callback) {
+            
+            $http.get('/auth/signout').success(function (resp) {
+
+                $cookieStore.remove('usercontext');
+                callback(resp);
+            });
+        },
+
+        currentContext: function () {
+
+            var stored = $cookieStore.get('usercontext');
+
+            console.log(stored);
+
+            if (stored) {
+
+                return {
+                    authenticated: true,
+                    username: stored.user.username
+                };
+            }
+
+            return {
+                authenticated: false,
+                username: ''
+            };
+        }
     };
 });
 
@@ -52,38 +110,34 @@ app.controller('mainController', function($scope, postService, $rootScope){
     };
 });
 
-app.controller('authController', function($scope, $http, $rootScope, $location){
+app.controller('authController', function($scope, $rootScope, $location, AuthService){
 
     $scope.user = { username: '', password: '' };
     $scope.error_message = '';
 
-    $scope.login = function(){
+    $scope.login = function() {
 
-        $http.post('/auth/login', $scope.user).success(function(data){
+        AuthService.signin($scope.user, function (resp) {
 
-            if(data.state == 'success'){
-                $rootScope.userContext.authenticated = true;
-                $rootScope.userContext.username = data.user.username;
+            if (resp.state == 'success') {
+                $rootScope.userContext = AuthService.currentContext();
                 $location.path('/');
-            }
-            else{
-                $scope.error_message = data.message;
-            }
+            } else {
+                $scope.error_message = resp.message;
+            };
         });
     };
 
-    $scope.register = function(){
+    $scope.register = function() {
 
-        $http.post('/auth/signup', $scope.user).success(function(data){
+        AuthService.signup($scope.user, function (resp) {
 
-            if(data.state == 'success'){
-                $rootScope.userContext.authenticated = true;
-                $rootScope.userContext.username = data.user.username;
+            if (resp.state == 'success') {
+                $rootScope.userContext = AuthService.currentContext();
                 $location.path('/');
-            }
-            else{
-                $scope.error_message = data.message;
-            }
+            } else {
+                $scope.error_message = resp.message;
+            };
         });
     };
 });
