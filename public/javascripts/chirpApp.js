@@ -1,14 +1,18 @@
-var app = angular.module('chirpApp', ['ngRoute', 'ngResource', 'ngCookies']).run(function ($http, $rootScope, AuthService) {
+var app = angular.module('chirpApp', ['ngRoute', 'ngResource', 'ngCookies']).run(function ($rootScope, authService, $location) {
 
-    $rootScope.userContext = AuthService.currentContext();
+    $rootScope.userContext = authService.currentContext();
 
-    AuthService.signout(function (resp) {
+    $rootScope.signout = function () {
         
-        $rootScope.userContext = AuthService.currentContext();
-    });
+        authService.signout(function (resp) {
+            
+            $rootScope.userContext = authService.currentContext();
+            $location.path('/');
+        });
+    };
 });
 
-app.factory('AuthService', function ($http, $cookieStore) {
+app.factory('authService', function ($http, $cookieStore) {
     
     return {
 
@@ -110,34 +114,34 @@ app.controller('mainController', function($scope, postService, $rootScope){
     };
 });
 
-app.controller('authController', function($scope, $rootScope, $location, AuthService){
+app.controller('authController', function($scope, $rootScope, $location, authService){
 
     $scope.user = { username: '', password: '' };
     $scope.error_message = '';
 
     $scope.login = function() {
 
-        AuthService.signin($scope.user, function (resp) {
+        authService.signin($scope.user, function (resp) {
 
             if (resp.state == 'success') {
-                $rootScope.userContext = AuthService.currentContext();
+                $rootScope.userContext = authService.currentContext();
                 $location.path('/');
             } else {
                 $scope.error_message = resp.message;
-            };
+            }
         });
     };
 
     $scope.register = function() {
 
-        AuthService.signup($scope.user, function (resp) {
+        authService.signup($scope.user, function (resp) {
 
             if (resp.state == 'success') {
-                $rootScope.userContext = AuthService.currentContext();
+                $rootScope.userContext = authService.currentContext();
                 $location.path('/');
             } else {
                 $scope.error_message = resp.message;
-            };
+            }
         });
     };
 });
