@@ -2,6 +2,8 @@
 
 This is my own step-by-step implementation of the Chirp app.
 
+Here is the tutorial series: https://www.youtube.com/playlist?list=PLbYsIzrAgAKgMb8oYsgRbDmVNt1y-h9fv
+
 #### notes on Module-2:
 express installation (local) needed: `npm install express --save`
 
