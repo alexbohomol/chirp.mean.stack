@@ -12,7 +12,7 @@ var session = require('express-session');
 // require mongoose-ODM and its models
 var models = require('./models/models');
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/test-chirp');
+mongoose.connect(process.env.MONGO_URL || 'mongodb://localhost/test-chirp');
 
 // require web handlers
 var index = require('./routes/index');
