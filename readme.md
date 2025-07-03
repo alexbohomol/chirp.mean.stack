@@ -7,11 +7,13 @@ Here is the tutorial series: https://www.youtube.com/playlist?list=PLbYsIzrAgAKg
 #### Run containerised:
 
 Build and up all:
+
 ```shell
 docker compose up -d --build
 ```
 
 Result:
+
 ```
 [+] Running 5/5
  ✔ chirp                               Built
@@ -22,19 +24,20 @@ Result:
 ```
 
 Shutdown:
+
 ```shell
 docker compose down --volumes
 ```
 
 #### notes on Module-2:
+
 express installation (local) needed: `npm install express --save`
 
 command to start: `node app.js`
 
-
 #### notes on Module-3:
 
-typos in both *README* and *Finished*, causing the particular posts API not working (no errors, just `undefined`):
+typos in both _README_ and _Finished_, causing the particular posts API not working (no errors, just `undefined`):
 `req.param.id` - must be `req.params.id`
 
 Tests console log:
