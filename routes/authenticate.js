@@ -22,7 +22,7 @@ module.exports = function (passport) {
     passport.authenticate('login', {
       successRedirect: '/auth/success',
       failureRedirect: '/auth/failure',
-    }),
+    })
   );
 
   //sign up
@@ -31,7 +31,7 @@ module.exports = function (passport) {
     passport.authenticate('signup', {
       successRedirect: '/auth/success',
       failureRedirect: '/auth/failure',
-    }),
+    })
   );
 
   //log out

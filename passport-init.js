@@ -50,8 +50,8 @@ module.exports = function (passport) {
           console.log(msg);
           return done(null, user);
         });
-      },
-    ),
+      }
+    )
   );
 
   passport.use(
@@ -93,8 +93,8 @@ module.exports = function (passport) {
             return done(null, newUser);
           });
         });
-      },
-    ),
+      }
+    )
   );
 
   var isValidPassword = function (user, password) {

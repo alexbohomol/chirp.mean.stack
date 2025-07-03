@@ -33,7 +33,7 @@ app.use(
     secret: 'keyboard cat',
     resave: false,
     saveUninitialized: true,
-  }),
+  })
 );
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
