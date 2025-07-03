@@ -1,51 +1,51 @@
 var app = angular
-  .module("chirpApp", ["ngRoute", "ngResource", "ngCookies"])
+  .module('chirpApp', ['ngRoute', 'ngResource', 'ngCookies'])
   .run(function ($rootScope, authService, $location) {
     $rootScope.userContext = authService.currentContext();
 
     $rootScope.signout = function () {
       authService.signout(function (resp) {
         $rootScope.userContext = authService.currentContext();
-        $location.path("/");
+        $location.path('/');
       });
     };
   });
 
-app.factory("authService", function ($http, $cookieStore) {
+app.factory('authService', function ($http, $cookieStore) {
   return {
     signin: function (credentials, callback) {
-      $http.post("/auth/login", credentials).success(function (resp) {
-        if (resp.state == "success") {
-          $cookieStore.put("usercontext", resp);
+      $http.post('/auth/login', credentials).success(function (resp) {
+        if (resp.state == 'success') {
+          $cookieStore.put('usercontext', resp);
           callback(resp);
         } else {
-          $cookieStore.remove("usercontext");
+          $cookieStore.remove('usercontext');
           callback(resp);
         }
       });
     },
 
     signup: function (credentials, callback) {
-      $http.post("/auth/signup", credentials).success(function (resp) {
-        if (resp.state == "success") {
-          $cookieStore.put("usercontext", resp);
+      $http.post('/auth/signup', credentials).success(function (resp) {
+        if (resp.state == 'success') {
+          $cookieStore.put('usercontext', resp);
           callback(resp);
         } else {
-          $cookieStore.remove("usercontext");
+          $cookieStore.remove('usercontext');
           callback(resp);
         }
       });
     },
 
     signout: function (callback) {
-      $http.get("/auth/signout").success(function (resp) {
-        $cookieStore.remove("usercontext");
+      $http.get('/auth/signout').success(function (resp) {
+        $cookieStore.remove('usercontext');
         callback(resp);
       });
     },
 
     currentContext: function () {
-      var stored = $cookieStore.get("usercontext");
+      var stored = $cookieStore.get('usercontext');
 
       console.log(stored);
 
@@ -58,7 +58,7 @@ app.factory("authService", function ($http, $cookieStore) {
 
       return {
         authenticated: false,
-        username: "",
+        username: '',
       };
     },
   };
@@ -66,27 +66,27 @@ app.factory("authService", function ($http, $cookieStore) {
 
 app.config(function ($routeProvider) {
   $routeProvider
-    .when("/", {
-      templateUrl: "main.html",
-      controller: "mainController",
+    .when('/', {
+      templateUrl: 'main.html',
+      controller: 'mainController',
     })
-    .when("/login", {
-      templateUrl: "login.html",
-      controller: "authController",
+    .when('/login', {
+      templateUrl: 'login.html',
+      controller: 'authController',
     })
-    .when("/register", {
-      templateUrl: "register.html",
-      controller: "authController",
+    .when('/register', {
+      templateUrl: 'register.html',
+      controller: 'authController',
     });
 });
 
-app.factory("postService", function ($resource) {
-  return $resource("/api/posts/:id");
+app.factory('postService', function ($resource) {
+  return $resource('/api/posts/:id');
 });
 
-app.controller("mainController", function ($scope, postService, $rootScope) {
+app.controller('mainController', function ($scope, postService, $rootScope) {
   $scope.posts = postService.query();
-  $scope.newPost = { created_by: "", text: "", created_at: "" };
+  $scope.newPost = { created_by: '', text: '', created_at: '' };
 
   $scope.post = function () {
     $scope.newPost.created_by = $rootScope.userContext.username;
@@ -94,22 +94,22 @@ app.controller("mainController", function ($scope, postService, $rootScope) {
 
     postService.save($scope.newPost, function () {
       $scope.posts = postService.query();
-      $scope.newPost = { created_by: "", text: "", created_at: "" };
+      $scope.newPost = { created_by: '', text: '', created_at: '' };
     });
   };
 });
 
 app.controller(
-  "authController",
+  'authController',
   function ($scope, $rootScope, $location, authService) {
-    $scope.user = { username: "", password: "" };
-    $scope.error_message = "";
+    $scope.user = { username: '', password: '' };
+    $scope.error_message = '';
 
     $scope.login = function () {
       authService.signin($scope.user, function (resp) {
-        if (resp.state == "success") {
+        if (resp.state == 'success') {
           $rootScope.userContext = authService.currentContext();
-          $location.path("/");
+          $location.path('/');
         } else {
           $scope.error_message = resp.message;
         }
@@ -118,9 +118,9 @@ app.controller(
 
     $scope.register = function () {
       authService.signup($scope.user, function (resp) {
-        if (resp.state == "success") {
+        if (resp.state == 'success') {
           $rootScope.userContext = authService.currentContext();
-          $location.path("/");
+          $location.path('/');
         } else {
           $scope.error_message = resp.message;
         }

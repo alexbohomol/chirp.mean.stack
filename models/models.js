@@ -1,4 +1,4 @@
-var mongoose = require("mongoose");
+var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var userSchema = new Schema({
@@ -14,5 +14,5 @@ var postSchema = new Schema({
   text: String,
 });
 
-mongoose.model("Post", postSchema);
-mongoose.model("User", userSchema);
+mongoose.model('Post', postSchema);
+mongoose.model('User', userSchema);
