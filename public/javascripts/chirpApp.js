@@ -99,32 +99,29 @@ app.controller('mainController', function ($scope, postService, $rootScope) {
   };
 });
 
-app.controller(
-  'authController',
-  function ($scope, $rootScope, $location, authService) {
-    $scope.user = { username: '', password: '' };
-    $scope.error_message = '';
+app.controller('authController', function ($scope, $rootScope, $location, authService) {
+  $scope.user = { username: '', password: '' };
+  $scope.error_message = '';
 
-    $scope.login = function () {
-      authService.signin($scope.user, function (resp) {
-        if (resp.state == 'success') {
-          $rootScope.userContext = authService.currentContext();
-          $location.path('/');
-        } else {
-          $scope.error_message = resp.message;
-        }
-      });
-    };
+  $scope.login = function () {
+    authService.signin($scope.user, function (resp) {
+      if (resp.state == 'success') {
+        $rootScope.userContext = authService.currentContext();
+        $location.path('/');
+      } else {
+        $scope.error_message = resp.message;
+      }
+    });
+  };
 
-    $scope.register = function () {
-      authService.signup($scope.user, function (resp) {
-        if (resp.state == 'success') {
-          $rootScope.userContext = authService.currentContext();
-          $location.path('/');
-        } else {
-          $scope.error_message = resp.message;
-        }
-      });
-    };
-  }
-);
+  $scope.register = function () {
+    authService.signup($scope.user, function (resp) {
+      if (resp.state == 'success') {
+        $rootScope.userContext = authService.currentContext();
+        $location.path('/');
+      } else {
+        $scope.error_message = resp.message;
+      }
+    });
+  };
+});
