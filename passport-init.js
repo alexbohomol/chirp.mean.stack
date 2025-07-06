@@ -1,17 +1,22 @@
 var mongoose = require('mongoose');
+
 var User = mongoose.model('User');
+
 var LocalStrategy = require('passport-local').Strategy;
+
 var bCrypt = require('bcrypt-nodejs');
 
 module.exports = function (passport) {
   passport.serializeUser(function (user, done) {
     console.log('Serializing user: ', user.username);
+
     return done(null, user._id);
   });
 
   passport.deserializeUser(function (id, done) {
     User.findById(id, function (err, user) {
       console.log('Deserializing user: ', user.username);
+
       return done(err, user);
     });
   });
@@ -28,18 +33,21 @@ module.exports = function (passport) {
 
           if (err) {
             console.log('Error on Login: ' + err);
+
             return done(err);
           }
 
           if (!user) {
             msg = 'User Not Found with username: ' + username;
             console.log(msg);
+
             return done(msg, false);
           }
 
           if (!isValidPassword(user, password)) {
             msg = 'Invalid password for: ' + user.username;
             console.log(msg);
+
             return done(msg, false);
           }
 
@@ -48,6 +56,7 @@ module.exports = function (passport) {
           // which will be treated like success
           msg = 'Sucessfully authenticated: ' + username;
           console.log(msg);
+
           return done(null, user);
         });
       }
@@ -66,12 +75,14 @@ module.exports = function (passport) {
 
           if (err) {
             console.log('Error in SignUp: ' + err);
+
             return done(err);
           }
 
           if (user) {
             msg = 'User already exists with username: ' + username;
             console.log(msg);
+
             return done(msg, false);
           }
 
@@ -90,6 +101,7 @@ module.exports = function (passport) {
             }
 
             console.log('Registration successful for: ' + newUser.username);
+
             return done(null, newUser);
           });
         });
