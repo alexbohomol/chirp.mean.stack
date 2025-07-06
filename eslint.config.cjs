@@ -35,8 +35,8 @@ module.exports = [
         { blankLine: 'always', prev: ['const', 'let', 'var'], next: '*' },
         { blankLine: 'always', prev: 'block-like', next: '*' },
       ],
-      'prefer-arrow-callback': 'warn',
-      'func-style': ['warn', 'expression', { allowArrowFunctions: true }],
+      'func-style': ['warn', 'declaration'],
+      'prefer-arrow-callback': 'off',
     },
   },
 ];
