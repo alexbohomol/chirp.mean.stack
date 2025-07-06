@@ -1,22 +1,32 @@
 var express = require('express');
+
 var path = require('path');
+
 var favicon = require('serve-favicon');
+
 var logger = require('morgan');
+
 var cookieParser = require('cookie-parser');
+
 var bodyParser = require('body-parser');
 
 // require passport
 var passport = require('passport');
+
 var session = require('express-session');
 
 // require mongoose-ODM and its models
 var models = require('./models/models');
+
 var mongoose = require('mongoose');
+
 mongoose.connect(process.env.MONGO_URL || 'mongodb://localhost/test-chirp');
 
 // require web handlers
 var index = require('./routes/index');
+
 var api = require('./routes/api');
+
 var authenticate = require('./routes/authenticate')(passport);
 
 var app = express();
@@ -51,11 +61,13 @@ app.use('/auth', authenticate);
 
 // configure passport strategy
 var initPassport = require('./passport-init');
+
 initPassport(passport);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   var err = new Error('Not Found');
+
   err.status = 404;
   next(err);
 });

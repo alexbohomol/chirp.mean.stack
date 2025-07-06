@@ -1,6 +1,9 @@
 var express = require('express');
+
 var router = express.Router();
+
 var mongoose = require('mongoose');
+
 var Post = mongoose.model('Post');
 
 // require authentication for non-GET methods
@@ -19,6 +22,7 @@ router
   // create a new post
   .post(function (req, res) {
     var post = new Post();
+
     post.text = req.body.text;
     post.created_by = req.body.created_by;
 
