@@ -16,7 +16,7 @@ describe('Auth endpoints', () => {
 
         expect(res.statusCode).toBe(200);
         expect(res.body.state).toBe('failure');
-        expect(res.body.user).toBe(null);
+        expect(res.body.user).toBeNull();
         expect(res.body.message).toBe('Invalid username or password');
     });
 
@@ -46,9 +46,30 @@ describe('Auth endpoints', () => {
         const res = await SutApi().post('/auth/login').send({
             username: signupRequest.username,
             password: signupRequest.password
-        });//.redirects(1);
+        });
 
         assertRedirect(res, '/auth/success');
+    });
+
+    test('POST /auth/login redirects after successful login', async () => {
+
+        const signupRequest = {
+            username: `user-${crypto.randomUUID()}`,
+            password: 'pass123'
+        };
+
+        // signup first
+        await SutApi().post('/auth/signup').send(signupRequest);
+
+        // then login
+        const res = await SutApi().post('/auth/login').send({
+            username: signupRequest.username,
+            password: signupRequest.password
+        }).redirects(1);//.end((err, res) => { console.log(res); });
+
+        expect(res.statusCode).toBe(200);
+        expect(res.body.state).toBe('success');
+        expect(res.body.user).toBeNull(); //TODO: only in test here - why???
     });
 
     test('POST /auth/login returns failure on bad password', async () => {
