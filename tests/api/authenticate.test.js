@@ -43,10 +43,7 @@ describe('Auth endpoints', () => {
         const res = await request('http://localhost:3000').post('/auth/login')
             .send({ username: userName, password: 'pass123' });//.redirects(1);
 
-        expect(res.statusCode).toBe(302);
-        expect(res.headers.location).toBe('/auth/success');
-        expect(res.headers['content-type']).toBe('text/plain; charset=utf-8');
-        expect(res.text).toBe('Moved Temporarily. Redirecting to /auth/success');
+        assertRedirect(res, '/auth/success');
     });
 
     test('POST /auth/login retrurns failure on bad password', async () => {
@@ -69,9 +66,13 @@ describe('Auth endpoints', () => {
 
         const res = await request('http://localhost:3000').get('/auth/signout');
 
-        expect(res.statusCode).toBe(302);
-        expect(res.headers.location).toBe('/');
-        expect(res.headers['content-type']).toBe('text/plain; charset=utf-8');
-        expect(res.text).toBe('Moved Temporarily. Redirecting to /');
+        assertRedirect(res, '/');
     });
+
+    function assertRedirect(response, location) {
+        expect(response.statusCode).toBe(302);
+        expect(response.headers.location).toBe(location);
+        expect(response.headers['content-type']).toBe('text/plain; charset=utf-8');
+        expect(response.text).toBe(`Moved Temporarily. Redirecting to ${location}`);
+    }
 });
