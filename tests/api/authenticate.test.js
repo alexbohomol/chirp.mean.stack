@@ -24,8 +24,10 @@ describe('Auth endpoints', () => {
 
         const userName = `user-${crypto.randomUUID()}`;
 
-        const res = await SutApi().post('/auth/signup')
-            .send({ username: userName, password: 'pass123' });
+        const res = await SutApi().post('/auth/signup').send({
+            username: userName,
+            password: 'pass123'
+        });
 
         assertRedirect(res, '/auth/success');
     });
@@ -35,27 +37,35 @@ describe('Auth endpoints', () => {
         const userName = `user-${crypto.randomUUID()}`;
 
         // signup first
-        await SutApi().post('/auth/signup')
-            .send({ username: userName, password: 'pass123' });
+        await SutApi().post('/auth/signup').send({
+            username: userName,
+            password: 'pass123'
+        });
 
         // then login
-        const res = await SutApi().post('/auth/login')
-            .send({ username: userName, password: 'pass123' });//.redirects(1);
+        const res = await SutApi().post('/auth/login').send({
+            username: userName,
+            password: 'pass123'
+        });//.redirects(1);
 
         assertRedirect(res, '/auth/success');
     });
 
-    test('POST /auth/login retrurns failure on bad password', async () => {
+    test('POST /auth/login returns failure on bad password', async () => {
 
         const userName = `user-${crypto.randomUUID()}`;
 
         // signup first
-        await SutApi().post('/auth/signup')
-            .send({ username: userName, password: 'pass123' });
+        await SutApi().post('/auth/signup').send({
+            username: userName,
+            password: 'pass123'
+        });
 
         // then login
-        const res = await SutApi().post('/auth/login')
-            .send({ username: userName, password: 'wrongpass' });
+        const res = await SutApi().post('/auth/login').send({
+            username: userName,
+            password: 'wrongpass'
+        });
 
         expect(res.statusCode).toBe(500);
         expect(res.text).toBe('<h1></h1>\n<h2></h2>\n<pre></pre>\n');
