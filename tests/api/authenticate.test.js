@@ -1,4 +1,4 @@
-import request from 'supertest';
+const request = require('supertest');
 
 describe('Auth endpoints', () => {
 
