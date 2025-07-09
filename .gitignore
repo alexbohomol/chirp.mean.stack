@@ -1,0 +1,39 @@
+# Node.js dependencies for all subdirectories/projects
+**/node_modules/
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+**/yarn.lock
+**/.env
+**/.env.*.local
+**/.DS_Store
+
+# Logs
+logs/
+**/logs/
+*.log
+**/*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS and Editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Test output
+**/coverage/
+**/dist/
+**/build/
+**/.nyc_output/
+
+# Optional: Ignore test DBs or temporary files
+**/tmp/
+**/temp/
+**/*.sqlite
+
+# Ignore testcontainers local Docker DB volumes (optional)
+testcontainers/
