@@ -22,30 +22,30 @@ describe('Auth endpoints', () => {
 
     test('POST /auth/signup can register a new user', async () => {
 
-        const userName = `user-${crypto.randomUUID()}`;
-
-        const res = await SutApi().post('/auth/signup').send({
-            username: userName,
+        const signupRequest = {
+            username: `user-${crypto.randomUUID()}`,
             password: 'pass123'
-        });
+        };
+
+        const res = await SutApi().post('/auth/signup').send(signupRequest);
 
         assertRedirect(res, '/auth/success');
     });
 
     test('POST /auth/login can login registered user', async () => {
 
-        const userName = `user-${crypto.randomUUID()}`;
+        const signupRequest = {
+            username: `user-${crypto.randomUUID()}`,
+            password: 'pass123'
+        };
 
         // signup first
-        await SutApi().post('/auth/signup').send({
-            username: userName,
-            password: 'pass123'
-        });
+        await SutApi().post('/auth/signup').send(signupRequest);
 
         // then login
         const res = await SutApi().post('/auth/login').send({
-            username: userName,
-            password: 'pass123'
+            username: signupRequest.username,
+            password: signupRequest.password
         });//.redirects(1);
 
         assertRedirect(res, '/auth/success');
@@ -53,17 +53,17 @@ describe('Auth endpoints', () => {
 
     test('POST /auth/login returns failure on bad password', async () => {
 
-        const userName = `user-${crypto.randomUUID()}`;
+        const signupRequest = {
+            username: `user-${crypto.randomUUID()}`,
+            password: 'pass123'
+        };
 
         // signup first
-        await SutApi().post('/auth/signup').send({
-            username: userName,
-            password: 'pass123'
-        });
+        await SutApi().post('/auth/signup').send(signupRequest);
 
         // then login
         const res = await SutApi().post('/auth/login').send({
-            username: userName,
+            username: signupRequest.username,
             password: 'wrongpass'
         });
 
