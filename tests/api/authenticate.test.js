@@ -4,7 +4,7 @@ describe('Auth endpoints', () => {
 
     test('GET /auth/success returns success', async () => {
 
-        const res = await request('http://localhost:3000').get('/auth/success');
+        const res = await SutApi().get('/auth/success');
 
         expect(res.statusCode).toBe(200);
         expect(res.body.state).toBe('success');
@@ -12,7 +12,7 @@ describe('Auth endpoints', () => {
 
     test('GET /auth/failure returns failure', async () => {
 
-        const res = await request('http://localhost:3000').get('/auth/failure');
+        const res = await SutApi().get('/auth/failure');
 
         expect(res.statusCode).toBe(200);
         expect(res.body.state).toBe('failure');
@@ -24,11 +24,10 @@ describe('Auth endpoints', () => {
 
         const userName = `user-${crypto.randomUUID()}`;
 
-        const res = await request('http://localhost:3000').post('/auth/signup')
+        const res = await SutApi().post('/auth/signup')
             .send({ username: userName, password: 'pass123' });
 
-        expect(res.statusCode).toBe(302);
-        expect(res.headers.location).toBe('/auth/success');
+        assertRedirect(res, '/auth/success');
     });
 
     test('POST /auth/login can login registered user', async () => {
@@ -36,11 +35,11 @@ describe('Auth endpoints', () => {
         const userName = `user-${crypto.randomUUID()}`;
 
         // signup first
-        await request('http://localhost:3000').post('/auth/signup')
+        await SutApi().post('/auth/signup')
             .send({ username: userName, password: 'pass123' });
 
         // then login
-        const res = await request('http://localhost:3000').post('/auth/login')
+        const res = await SutApi().post('/auth/login')
             .send({ username: userName, password: 'pass123' });//.redirects(1);
 
         assertRedirect(res, '/auth/success');
@@ -51,11 +50,11 @@ describe('Auth endpoints', () => {
         const userName = `user-${crypto.randomUUID()}`;
 
         // signup first
-        await request('http://localhost:3000').post('/auth/signup')
+        await SutApi().post('/auth/signup')
             .send({ username: userName, password: 'pass123' });
 
         // then login
-        const res = await request('http://localhost:3000').post('/auth/login')
+        const res = await SutApi().post('/auth/login')
             .send({ username: userName, password: 'wrongpass' });
 
         expect(res.statusCode).toBe(500);
@@ -64,10 +63,14 @@ describe('Auth endpoints', () => {
 
     test('GET /auth/signout returns redirect to /', async () => {
 
-        const res = await request('http://localhost:3000').get('/auth/signout');
+        const res = await SutApi().get('/auth/signout');
 
         assertRedirect(res, '/');
     });
+
+    function SutApi() {
+        return request('http://localhost:3000');
+    }
 
     function assertRedirect(response, location) {
         expect(response.statusCode).toBe(302);
