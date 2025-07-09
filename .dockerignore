@@ -1,0 +1,32 @@
+# Node.js dependencies (each project manages its own)
+**/node_modules
+**/npm-debug.log
+**/yarn-error.log
+**/yarn-debug.log
+
+# Environment files (should not be copied into images)
+**/.env
+**/.env.*.local
+
+# Editor and OS files
+.DS_Store
+.vscode
+.idea
+*.swp
+
+# Test output, build artifacts, and coverage (not needed in build context)
+**/coverage
+**/dist
+**/build
+**/.nyc_output
+
+# Logs and temp files
+**/logs
+*.log
+**/*.log
+**/tmp
+**/temp
+**/*.sqlite
+
+# Ignore testcontainers Docker volumes (if any)
+testcontainers/
