@@ -1,6 +1,25 @@
 const request = require('supertest');
+const { DockerComposeEnvironment } = require("testcontainers");
+const path = require("path");
 
 describe('Auth endpoints', () => {
+
+    let environment;
+
+    /* https://node.testcontainers.org/features/compose/ */
+    beforeAll(async () => {
+
+        const composeFilePath = path.resolve(__dirname, "../../");
+        const composeFile = "docker-compose.yml";
+        environment = await new DockerComposeEnvironment(composeFilePath, composeFile).up();
+    }, 30000);
+
+    afterAll(async () => {
+
+        if (environment) {
+            await environment.down();
+        }
+    }, 30000);
 
     test('GET /auth/success returns success', async () => {
 
