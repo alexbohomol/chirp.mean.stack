@@ -51,6 +51,23 @@ describe('Auth endpoints', () => {
         assertRedirect(res, '/auth/success');
     });
 
+    test('POST /auth/signup returns failure when user already exists', async () => {
+
+        const signupRequest = {
+            username: `user-${crypto.randomUUID()}`,
+            password: 'pass123'
+        };
+
+        // signup first
+        await SutApi().post('/auth/signup').send(signupRequest);
+
+        // try signing up again with the same username
+        const res = await SutApi().post('/auth/signup').send(signupRequest);
+
+        assertError(res);
+        // expect(res.text).toContain('User already exists with username ...');
+    });
+
     test('POST /auth/login can login registered user', async () => {
 
         const signupRequest = {
@@ -91,7 +108,18 @@ describe('Auth endpoints', () => {
         expect(res.body.user).toBeNull(); //TODO: only in test here - why???
     });
 
-    test('POST /auth/login returns failure on bad password', async () => {
+    test('POST /auth/login returns failure when user not found', async () => {
+
+        const res = await SutApi().post('/auth/login').send({
+            username: 'nonexistentuser',
+            password: 'pass123'
+        });
+
+        assertError(res);
+        // expect(res.text).toContain('User Not Found with username ...');
+    });
+
+    test('POST /auth/login returns failure on invalid password', async () => {
 
         const signupRequest = {
             username: `user-${crypto.randomUUID()}`,
@@ -101,17 +129,17 @@ describe('Auth endpoints', () => {
         // signup first
         await SutApi().post('/auth/signup').send(signupRequest);
 
-        // then login
+        // then login with wrong password
         const res = await SutApi().post('/auth/login').send({
             username: signupRequest.username,
             password: 'wrongpass'
         });
 
-        expect(res.statusCode).toBe(500);
-        expect(res.text).toBe('<h1></h1>\n<h2></h2>\n<pre></pre>\n');
+        assertError(res);
+        // expect(res.text).toContain('Invalid password for ...');
     });
 
-    test('GET /auth/signout returns redirect to /', async () => {
+    test('GET /auth/signout redirects to /', async () => {
 
         const res = await SutApi().get('/auth/signout');
 
@@ -120,6 +148,11 @@ describe('Auth endpoints', () => {
 
     function SutApi() {
         return request('http://localhost:3000');
+    }
+
+    function assertError(res) {
+        expect(res.statusCode).toBe(500);
+        expect(res.text).toBe('<h1></h1>\n<h2></h2>\n<pre></pre>\n');
     }
 
     function assertRedirect(response, location) {
