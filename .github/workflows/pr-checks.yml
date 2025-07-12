@@ -84,6 +84,11 @@ jobs:
     #   - name: Build project
     #     run: npm run build
 
+      - name: Prepare Docker Compose
+        run: |
+          docker compose -f ../../docker-compose.yml pull
+          docker compose -f ../../docker-compose.yml build
+
       - name: Run Integration Tests
         run: npm run test
 
