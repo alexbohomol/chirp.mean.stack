@@ -11,7 +11,13 @@ describe('Auth endpoints', () => {
 
         const composeFilePath = path.resolve(__dirname, "../../");
         const composeFile = "docker-compose.yml";
-        environment = await new DockerComposeEnvironment(composeFilePath, composeFile).up();
+        environment = await new DockerComposeEnvironment(composeFilePath, composeFile)
+            .withEnvironment({
+                MONGO_PORT: 55001,
+                APP_PORT: 3001
+            })
+            .withBuild(false)
+            .up();
     }, 30000);
 
     afterAll(async () => {
@@ -147,7 +153,7 @@ describe('Auth endpoints', () => {
     });
 
     function SutApi() {
-        return request('http://localhost:3000');
+        return request('http://localhost:3001');
     }
 
     function assertError(res) {

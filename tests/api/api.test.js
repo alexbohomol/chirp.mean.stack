@@ -26,7 +26,13 @@ describe('Posts endpoints', () => {
         const composeFilePath = path.resolve(__dirname, "../../");
         const composeFile = "docker-compose.yml";
 
-        return await new DockerComposeEnvironment(composeFilePath, composeFile).up();
+        return await new DockerComposeEnvironment(composeFilePath, composeFile)
+            .withEnvironment({
+                MONGO_PORT: 55002,
+                APP_PORT: 3002
+            })
+            .withBuild(false)
+            .up();
     }
 
     async function SignupAndLogin() {
@@ -44,11 +50,11 @@ describe('Posts endpoints', () => {
     }
 
     function SutAuth() {
-        return request('http://localhost:3000/auth');
+        return request('http://localhost:3002/auth');
     }
 
     function SutApi() {
-        return request('http://localhost:3000/api');
+        return request('http://localhost:3002/api');
     }
 
     function assertError(res) {
