@@ -1,3 +1,5 @@
+'use strict';
+
 const { DockerComposeEnvironment } = require("testcontainers");
 const path = require("path");
 

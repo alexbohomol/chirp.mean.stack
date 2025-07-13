@@ -1,5 +1,6 @@
 const request = require('supertest');
 const { DockerComposeUp } = require('./test-helpers.js');
+const { AssertError, AssertRedirect } = require('./test-assertions.js');
 
 describe('Auth endpoints', () => {
 
@@ -20,6 +21,10 @@ describe('Auth endpoints', () => {
             await environment.down();
         }
     }, 30000);
+
+    function SutApi() {
+        return request(`http://localhost:${APP_PORT}`);
+    }
 
     test('GET /auth/success returns success', async () => {
 
@@ -48,7 +53,7 @@ describe('Auth endpoints', () => {
 
         const res = await SutApi().post('/auth/signup').send(signupRequest);
 
-        assertRedirect(res, '/auth/success');
+        AssertRedirect(res, '/auth/success');
     });
 
     test('POST /auth/signup returns failure when user already exists', async () => {
@@ -64,7 +69,7 @@ describe('Auth endpoints', () => {
         // try signing up again with the same username
         const res = await SutApi().post('/auth/signup').send(signupRequest);
 
-        assertError(res);
+        AssertError(res);
         // expect(res.text).toContain('User already exists with username ...');
     });
 
@@ -84,7 +89,7 @@ describe('Auth endpoints', () => {
             password: signupRequest.password
         });
 
-        assertRedirect(res, '/auth/success');
+        AssertRedirect(res, '/auth/success');
     });
 
     test('POST /auth/login redirects after successful login', async () => {
@@ -115,7 +120,7 @@ describe('Auth endpoints', () => {
             password: 'pass123'
         });
 
-        assertError(res);
+        AssertError(res);
         // expect(res.text).toContain('User Not Found with username ...');
     });
 
@@ -135,7 +140,7 @@ describe('Auth endpoints', () => {
             password: 'wrongpass'
         });
 
-        assertError(res);
+        AssertError(res);
         // expect(res.text).toContain('Invalid password for ...');
     });
 
@@ -143,22 +148,6 @@ describe('Auth endpoints', () => {
 
         const res = await SutApi().get('/auth/signout');
 
-        assertRedirect(res, '/');
+        AssertRedirect(res, '/');
     });
-
-    function SutApi() {
-        return request(`http://localhost:${APP_PORT}`);
-    }
-
-    function assertError(res) {
-        expect(res.statusCode).toBe(500);
-        expect(res.text).toBe('<h1></h1>\n<h2></h2>\n<pre></pre>\n');
-    }
-
-    function assertRedirect(response, location) {
-        expect(response.statusCode).toBe(302);
-        expect(response.headers.location).toBe(location);
-        expect(response.headers['content-type']).toBe('text/plain; charset=utf-8');
-        expect(response.text).toBe(`Moved Temporarily. Redirecting to ${location}`);
-    }
 });

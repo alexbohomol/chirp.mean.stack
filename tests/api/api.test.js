@@ -1,5 +1,6 @@
 const request = require('supertest');
 const { DockerComposeUp } = require('./test-helpers.js');
+const { AssertError, AssertApiError, AssertRedirect } = require('./test-assertions.js');
 
 describe('Posts endpoints', () => {
 
@@ -45,23 +46,6 @@ describe('Posts endpoints', () => {
         return request(`http://localhost:${APP_PORT}/api`);
     }
 
-    function assertError(res) {
-        expect(res.statusCode).toBe(500);
-        expect(res.text).toBe('<h1></h1>\n<h2></h2>\n<pre></pre>\n');
-    }
-
-    function assertApiError(response, badObjectId) {
-        expect(response.statusCode).toBe(500);
-        expect(response.text).toBe(`{\"message\":\"Cast to ObjectId failed for value \\\"${badObjectId}\\\" at path \\\"_id\\\" for model \\\"Post\\\"\",\"name\":\"CastError\",\"stringValue\":\"\\\"${badObjectId}\\\"\",\"kind\":\"ObjectId\",\"value\":\"${badObjectId}\",\"path\":\"_id\"}`);
-    }
-
-    function assertRedirect(response, location) {
-        expect(response.statusCode).toBe(302);
-        expect(response.headers.location).toBe(location);
-        expect(response.headers['content-type']).toBe('text/plain; charset=utf-8');
-        expect(response.text).toBe(`Moved Temporarily. Redirecting to ${location}`);
-    }
-
     describe('POST /posts', () => {
         test('creates a new post successfully', async () => {
             const postRequest = {
@@ -86,7 +70,7 @@ describe('Posts endpoints', () => {
 
             const res = await SutApi().post('/posts').send(postRequest);
 
-            assertRedirect(res, '/#login');
+            AssertRedirect(res, '/#login');
         });
     });
 
@@ -120,7 +104,7 @@ describe('Posts endpoints', () => {
         test('returns error for non-existent post ID', async () => {
             const res = await SutApi().get('/posts/invalidID');
 
-            assertApiError(res, 'invalidID');
+            AssertApiError(res, 'invalidID');
         });
     });
 
@@ -155,7 +139,7 @@ describe('Posts endpoints', () => {
                 created_by: 'UpdatedUser'
             });
 
-            assertRedirect(res, '/#login');
+            AssertRedirect(res, '/#login');
         });
 
         /*
@@ -171,7 +155,7 @@ describe('Posts endpoints', () => {
                     created_by: 'Updated user'
                 });
 
-            assertError(res);
+            AssertError(res);
         });
     });
 
@@ -196,7 +180,7 @@ describe('Posts endpoints', () => {
         test('redirects to /#login when not authenticated', async () => {
             const res = await SutApi().delete('/posts/invalidID');
 
-            assertRedirect(res, '/#login');
+            AssertRedirect(res, '/#login');
         });
 
         test('returns error for non-existent post ID', async () => {
@@ -205,7 +189,7 @@ describe('Posts endpoints', () => {
                 .delete('/posts/invalidID')
                 .set('Cookie', cookies);
 
-            assertApiError(res, 'invalidID');
+            AssertApiError(res, 'invalidID');
         });
     });
 });
