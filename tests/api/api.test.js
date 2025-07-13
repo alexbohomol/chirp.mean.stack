@@ -1,8 +1,10 @@
 const request = require('supertest');
-const { DockerComposeEnvironment } = require("testcontainers");
-const path = require("path");
+const { DockerComposeUp } = require('./test-helpers.js');
 
 describe('Posts endpoints', () => {
+
+    const MONGO_PORT = 57002;
+    const APP_PORT = 3002;
 
     let environment;
     let cookies;
@@ -10,7 +12,7 @@ describe('Posts endpoints', () => {
     /* https://node.testcontainers.org/features/compose/ */
     beforeAll(async () => {
 
-        environment = await DockerComposeUp();
+        environment = await DockerComposeUp({ MONGO_PORT, APP_PORT });
         cookies = await SignupAndLogin();
     }, 30000);
 
@@ -20,20 +22,6 @@ describe('Posts endpoints', () => {
             await environment.down();
         }
     }, 30000);
-
-    async function DockerComposeUp() {
-
-        const composeFilePath = path.resolve(__dirname, "../../");
-        const composeFile = "docker-compose.yml";
-
-        return await new DockerComposeEnvironment(composeFilePath, composeFile)
-            .withEnvironment({
-                MONGO_PORT: 55002,
-                APP_PORT: 3002
-            })
-            .withBuild(false)
-            .up();
-    }
 
     async function SignupAndLogin() {
 
@@ -50,11 +38,11 @@ describe('Posts endpoints', () => {
     }
 
     function SutAuth() {
-        return request('http://localhost:3002/auth');
+        return request(`http://localhost:${APP_PORT}/auth`);
     }
 
     function SutApi() {
-        return request('http://localhost:3002/api');
+        return request(`http://localhost:${APP_PORT}/api`);
     }
 
     function assertError(res) {

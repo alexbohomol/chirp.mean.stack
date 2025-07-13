@@ -1,23 +1,17 @@
 const request = require('supertest');
-const { DockerComposeEnvironment } = require("testcontainers");
-const path = require("path");
+const { DockerComposeUp } = require('./test-helpers.js');
 
 describe('Auth endpoints', () => {
+
+    const MONGO_PORT = 57001;
+    const APP_PORT = 3001;
 
     let environment;
 
     /* https://node.testcontainers.org/features/compose/ */
     beforeAll(async () => {
 
-        const composeFilePath = path.resolve(__dirname, "../../");
-        const composeFile = "docker-compose.yml";
-        environment = await new DockerComposeEnvironment(composeFilePath, composeFile)
-            .withEnvironment({
-                MONGO_PORT: 55001,
-                APP_PORT: 3001
-            })
-            .withBuild(false)
-            .up();
+        environment = await DockerComposeUp({ MONGO_PORT, APP_PORT });
     }, 30000);
 
     afterAll(async () => {
@@ -153,7 +147,7 @@ describe('Auth endpoints', () => {
     });
 
     function SutApi() {
-        return request('http://localhost:3001');
+        return request(`http://localhost:${APP_PORT}`);
     }
 
     function assertError(res) {
