@@ -1,6 +1,6 @@
 const request = require('supertest');
 const { DockerComposeUp } = require('./test-helpers.js');
-const { AssertError, AssertApiError, AssertRedirect } = require('./test-assertions.js');
+const { AssertError, BadObjectIdResponse, AssertRedirect } = require('./test-assertions.js');
 
 describe('Posts endpoints', () => {
 
@@ -103,8 +103,10 @@ describe('Posts endpoints', () => {
 
         test('returns error for non-existent post ID', async () => {
             const res = await SutApi().get('/posts/invalidID');
-
-            AssertApiError(res, 'invalidID');
+            
+            const body = JSON.parse(res.text);
+            expect(res.statusCode).toBe(500);
+            expect(body).toMatchObject(BadObjectIdResponse('invalidID'));
         });
     });
 
@@ -189,7 +191,9 @@ describe('Posts endpoints', () => {
                 .delete('/posts/invalidID')
                 .set('Cookie', cookies);
 
-            AssertApiError(res, 'invalidID');
+            const body = JSON.parse(res.text);
+            expect(res.statusCode).toBe(500);
+            expect(body).toMatchObject(BadObjectIdResponse('invalidID'));
         });
     });
 });
