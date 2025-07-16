@@ -1,5 +1,5 @@
 const request = require('supertest');
-const { DockerComposeUp } = require('./test-helpers.js');
+const { DockerComposeUp } = require('./test-environment.js');
 const { AssertError, BadObjectIdResponse, AssertRedirect } = require('./test-assertions.js');
 
 describe('Posts endpoints', () => {
@@ -10,7 +10,6 @@ describe('Posts endpoints', () => {
     let environment;
     let cookies;
 
-    /* https://node.testcontainers.org/features/compose/ */
     beforeAll(async () => {
 
         environment = await DockerComposeUp({ MONGO_PORT, APP_PORT });
