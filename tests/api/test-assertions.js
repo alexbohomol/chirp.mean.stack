@@ -1,5 +1,3 @@
-'use strict';
-
 function AssertError(res) {
     expect(res.statusCode).toBe(500);
     expect(res.text).toBe('<h1></h1>\n<h2></h2>\n<pre></pre>\n');

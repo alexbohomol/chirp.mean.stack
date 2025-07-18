@@ -1,6 +1,6 @@
-const request = require('supertest');
-const { DockerComposeUp } = require('./test-environment.js');
-const { AssertError, BadObjectIdResponse, AssertRedirect } = require('./test-assertions.js');
+import request from 'supertest';
+import { DockerComposeUp } from './test-environment.js';
+import { AssertError, BadObjectIdResponse, AssertRedirect } from './test-assertions.js';
 
 describe('Posts endpoints', () => {
 
