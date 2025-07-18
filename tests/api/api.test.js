@@ -1,4 +1,4 @@
-import request from 'supertest';
+import Sut from './modules/sut.js';
 import { DockerComposeUp } from './modules/environment.js';
 import { AssertError, BadObjectIdResponse, AssertRedirect } from './modules/assertions.js';
 
@@ -9,10 +9,12 @@ describe('Posts endpoints', () => {
 
     let environment;
     let cookies;
+    let sut;
 
     beforeAll(async () => {
 
         environment = await DockerComposeUp({ MONGO_PORT, APP_PORT });
+        sut = new Sut(`http://localhost:${APP_PORT}`);
         cookies = await SignupAndLogin();
     }, 30000);
 
@@ -30,19 +32,11 @@ describe('Posts endpoints', () => {
             password: 'Pass123'
         };
 
-        await SutAuth().post('/signup').send(request);
+        await sut.auth().post('/signup').send(request);
 
-        const loginResponse = await SutAuth().post('/login').send(request);
+        const loginResponse = await sut.auth().post('/login').send(request);
 
         return loginResponse.headers['set-cookie'];
-    }
-
-    function SutAuth() {
-        return request(`http://localhost:${APP_PORT}/auth`);
-    }
-
-    function SutApi() {
-        return request(`http://localhost:${APP_PORT}/api`);
     }
 
     describe('POST /posts', () => {
@@ -52,7 +46,7 @@ describe('Posts endpoints', () => {
                 created_by: 'TestUser'
             };
 
-            const res = await SutApi().post('/posts')
+            const res = await sut.api().post('/posts')
                 .set('Cookie', cookies)
                 .send(postRequest);
 
@@ -67,7 +61,7 @@ describe('Posts endpoints', () => {
                 created_by: 'TestUser'
             };
 
-            const res = await SutApi().post('/posts').send(postRequest);
+            const res = await sut.api().post('/posts').send(postRequest);
 
             AssertRedirect(res, '/#login');
         });
@@ -75,7 +69,7 @@ describe('Posts endpoints', () => {
 
     describe('GET /posts', () => {
         test('retrieves all posts', async () => {
-            const res = await SutApi().get('/posts');
+            const res = await sut.api().get('/posts');
 
             expect(res.statusCode).toBe(200);
             expect(Array.isArray(res.body)).toBe(true);
@@ -89,11 +83,11 @@ describe('Posts endpoints', () => {
                 created_by: 'TestUser'
             };
 
-            const createdPost = await SutApi().post('/posts')
+            const createdPost = await sut.api().post('/posts')
                 .set('Cookie', cookies)
                 .send(postRequest);
 
-            const res = await SutApi().get(`/posts/${createdPost.body._id}`);
+            const res = await sut.api().get(`/posts/${createdPost.body._id}`);
 
             expect(res.statusCode).toBe(200);
             expect(res.body.text).toBe(postRequest.text);
@@ -101,7 +95,7 @@ describe('Posts endpoints', () => {
         });
 
         test('returns error for non-existent post ID', async () => {
-            const res = await SutApi().get('/posts/invalidID');
+            const res = await sut.api().get('/posts/invalidID');
 
             const body = JSON.parse(res.text);
             expect(res.statusCode).toBe(500);
@@ -116,7 +110,7 @@ describe('Posts endpoints', () => {
                 created_by: 'TestUser'
             };
 
-            const createdPost = await SutApi().post('/posts')
+            const createdPost = await sut.api().post('/posts')
                 .set('Cookie', cookies)
                 .send(postRequest);
 
@@ -125,7 +119,7 @@ describe('Posts endpoints', () => {
                 created_by: 'UpdatedUser'
             };
 
-            const res = await SutApi().put(`/posts/${createdPost.body._id}`)
+            const res = await sut.api().put(`/posts/${createdPost.body._id}`)
                 .set('Cookie', cookies)
                 .send(updatedPost);
 
@@ -135,7 +129,7 @@ describe('Posts endpoints', () => {
         });
 
         test('redirects to /#login when not authenticated', async () => {
-            const res = await SutApi().put('/posts/invalidID').send({
+            const res = await sut.api().put('/posts/invalidID').send({
                 text: 'Updated post',
                 created_by: 'UpdatedUser'
             });
@@ -149,7 +143,7 @@ describe('Posts endpoints', () => {
         - we will skip it until we check retieved post is not null
         */
         test.skip('returns error for non-existent post ID', async () => {
-            const res = await SutApi().put('/posts/invalidID')
+            const res = await sut.api().put('/posts/invalidID')
                 .set('Cookie', cookies)
                 .send({
                     text: 'Updated post',
@@ -167,11 +161,11 @@ describe('Posts endpoints', () => {
                 created_by: 'TestUser'
             };
 
-            const createdPost = await SutApi().post('/posts')
+            const createdPost = await sut.api().post('/posts')
                 .set('Cookie', cookies)
                 .send(postRequest);
 
-            const res = await SutApi().delete(`/posts/${createdPost.body._id}`)
+            const res = await sut.api().delete(`/posts/${createdPost.body._id}`)
                 .set('Cookie', cookies);
 
             expect(res.statusCode).toBe(200);
@@ -179,14 +173,14 @@ describe('Posts endpoints', () => {
         });
 
         test('redirects to /#login when not authenticated', async () => {
-            const res = await SutApi().delete('/posts/invalidID');
+            const res = await sut.api().delete('/posts/invalidID');
 
             AssertRedirect(res, '/#login');
         });
 
         test('returns error for non-existent post ID', async () => {
 
-            const res = await SutApi()
+            const res = await sut.api()
                 .delete('/posts/invalidID')
                 .set('Cookie', cookies);
 
