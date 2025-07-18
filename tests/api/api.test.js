@@ -1,6 +1,6 @@
 import request from 'supertest';
-import { DockerComposeUp } from './test-environment.js';
-import { AssertError, BadObjectIdResponse, AssertRedirect } from './test-assertions.js';
+import { DockerComposeUp } from './modules/environment.js';
+import { AssertError, BadObjectIdResponse, AssertRedirect } from './modules/assertions.js';
 
 describe('Posts endpoints', () => {
 
@@ -102,7 +102,7 @@ describe('Posts endpoints', () => {
 
         test('returns error for non-existent post ID', async () => {
             const res = await SutApi().get('/posts/invalidID');
-            
+
             const body = JSON.parse(res.text);
             expect(res.statusCode).toBe(500);
             expect(body).toMatchObject(BadObjectIdResponse('invalidID'));

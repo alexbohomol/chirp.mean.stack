@@ -1,6 +1,6 @@
 import request from 'supertest';
-import { DockerComposeUp } from './test-environment.js';
-import { AssertError, AssertRedirect } from './test-assertions.js';
+import { DockerComposeUp } from './modules/environment.js';
+import { AssertError, AssertRedirect } from './modules/assertions.js';
 
 describe('Auth endpoints', () => {
 
