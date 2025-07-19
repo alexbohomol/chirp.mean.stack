@@ -1,0 +1,96 @@
+name: Pull Request Checks
+
+on:
+  push:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+
+  ui_checks:
+    name: 'UI app / Code'
+    runs-on: ubuntu-latest
+    env:
+      NODE_JS_VERSION: 0
+    defaults:
+      run:
+        working-directory: apps/ui
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+    #   - name: Set up Node.Js ${{ env.NODE_JS_VERSION }}
+    #     uses: actions/setup-node@v4
+    #     with:
+    #       node-version: ${{ env.NODE_JS_VERSION }}
+    #       cache: npm
+
+      - name: Check Node.Js and enviroment
+        run: |
+          node --version
+          npm --version
+          docker --version
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Enforce Prettier
+        run: npm run format:check
+
+      - name: Enforce ESLint
+        run: npm run lint:check
+
+    #   - name: Build project
+    #     run: npm run build
+
+    #   - name: Run Unit Tests
+    #     run: npm run test
+
+    #   - name: Run Integration Tests
+    #     run: npm run test:e2e
+
+  api_tests:
+    name: 'API app / Integr Tests'
+    runs-on: ubuntu-latest
+    env:
+      NODE_JS_VERSION: 22
+    defaults:
+      run:
+        working-directory: tests/api
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.Js ${{ env.NODE_JS_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_JS_VERSION }}
+
+      - name: Check Node.Js and enviroment
+        run: |
+          node --version
+          npm --version
+          docker --version
+
+      - name: Install dependencies
+        run: npm ci
+
+    #   - name: Enforce Prettier
+    #     run: npm run format:check
+
+    #   - name: Enforce ESLint
+    #     run: npm run lint:check
+
+    #   - name: Build project
+    #     run: npm run build
+
+      - name: Prepare Docker Compose
+        run: |
+          docker compose -f ../../docker-compose.yml pull
+          docker compose -f ../../docker-compose.yml build
+
+      - name: Run Integration Tests
+        run: npm run test
+
+    #   - name: Run Integration Tests
+    #     run: npm run test:e2e
