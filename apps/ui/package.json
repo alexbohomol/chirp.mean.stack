@@ -6,8 +6,8 @@
     "start": "node ./bin/www",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint": "eslint . --fix",
+    "lint:check": "eslint ."
   },
   "dependencies": {
     "bcrypt-nodejs": "0.0.3",
