@@ -6,7 +6,7 @@ export default defineConfig({
     retries: 0,
     use: {
         // baseURL: process.env.BASE_URL || 'http://localhost:3000',
-        headless: false,
+        headless: true,
         // viewport: { width: 1280, height: 800 },
         // screenshot: 'only-on-failure',
         // trace: 'on-first-retry',
