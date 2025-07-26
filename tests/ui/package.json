@@ -3,8 +3,8 @@
     "test": "vitest run"
   },
   "devDependencies": {
-    "supertest": "^7.1.3",
-    "testcontainers": "^11.2.1",
+    "playwright": "^1.54.1",
+    "testcontainers": "^11.4.0",
     "vitest": "^3.2.4"
   }
 }
