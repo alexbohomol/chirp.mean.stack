@@ -1,0 +1,7 @@
+{
+  "devDependencies": {
+    "playwright": "^1.54.1",
+    "testcontainers": "^11.4.0",
+    "vitest": "^3.2.4"
+  }
+}
