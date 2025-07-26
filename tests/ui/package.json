@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "test": "vitest run"
+  },
   "devDependencies": {
     "playwright": "^1.54.1",
     "testcontainers": "^11.4.0",
