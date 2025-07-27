@@ -75,7 +75,7 @@ jobs:
           docker compose -f ../../docker-compose.yml build
 
       - name: Run E2E Tests
-        run: npm run test
+        run: FORCE_COLOR=1 npm run test
 
   api_tests:
     name: 'API app / Integr Tests'
