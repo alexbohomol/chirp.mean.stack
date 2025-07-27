@@ -67,6 +67,8 @@ jobs:
         run: npm ci
 
       - name: Install Playwright Browsers
+        env:
+          PW_SKIP_VALIDATE_HOST_REQUIREMENTS: 1
         run: npx playwright install
 
       - name: Prepare Docker Compose
@@ -75,7 +77,9 @@ jobs:
           docker compose -f ../../docker-compose.yml build
 
       - name: Run E2E Tests
-        run: FORCE_COLOR=1 npm run test
+        env:
+          FORCE_COLOR: 1
+        run: npm run test
 
   api_tests:
     name: 'API app / Integr Tests'
