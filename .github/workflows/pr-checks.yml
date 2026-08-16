@@ -17,10 +17,10 @@ jobs:
         working-directory: apps/ui
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
     #   - name: Set up Node.Js ${{ env.NODE_JS_VERSION }}
-    #     uses: actions/setup-node@v4
+    #     uses: actions/setup-node@v7
     #     with:
     #       node-version: ${{ env.NODE_JS_VERSION }}
     #       cache: npm
@@ -50,10 +50,10 @@ jobs:
         working-directory: tests/ui
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Node.Js ${{ env.NODE_JS_VERSION }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_JS_VERSION }}
 
@@ -89,10 +89,10 @@ jobs:
         working-directory: tests/api
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Node.Js ${{ env.NODE_JS_VERSION }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_JS_VERSION }}
 
