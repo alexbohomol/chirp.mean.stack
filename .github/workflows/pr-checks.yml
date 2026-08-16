@@ -17,10 +17,10 @@ jobs:
         working-directory: apps/ui
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
     #   - name: Set up Node.Js ${{ env.NODE_JS_VERSION }}
-    #     uses: actions/setup-node@v4
+    #     uses: actions/setup-node@v7
     #     with:
     #       node-version: ${{ env.NODE_JS_VERSION }}
     #       cache: npm
@@ -40,29 +40,20 @@ jobs:
       - name: Enforce ESLint
         run: npm run lint:check
 
-    #   - name: Build project
-    #     run: npm run build
-
-    #   - name: Run Unit Tests
-    #     run: npm run test
-
-    #   - name: Run Integration Tests
-    #     run: npm run test:e2e
-
-  api_tests:
-    name: 'API app / Integr Tests'
+  ui_tests:
+    name: 'UI app / E2E Tests'
     runs-on: ubuntu-latest
     env:
       NODE_JS_VERSION: 22
     defaults:
       run:
-        working-directory: tests/api
+        working-directory: tests/ui
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Node.Js ${{ env.NODE_JS_VERSION }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_JS_VERSION }}
 
@@ -75,14 +66,44 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-    #   - name: Enforce Prettier
-    #     run: npm run format:check
+      - name: Install Playwright Browsers
+        run: npx playwright install chromium
 
-    #   - name: Enforce ESLint
-    #     run: npm run lint:check
+      - name: Prepare Docker Compose
+        run: |
+          docker compose -f ../../docker-compose.yml pull
+          docker compose -f ../../docker-compose.yml build
 
-    #   - name: Build project
-    #     run: npm run build
+      - name: Run E2E Tests
+        env:
+          FORCE_COLOR: 1
+        run: npm run test
+
+  api_tests:
+    name: 'API app / Integr Tests'
+    runs-on: ubuntu-latest
+    env:
+      NODE_JS_VERSION: 22
+    defaults:
+      run:
+        working-directory: tests/api
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Set up Node.Js ${{ env.NODE_JS_VERSION }}
+        uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_JS_VERSION }}
+
+      - name: Check Node.Js and enviroment
+        run: |
+          node --version
+          npm --version
+          docker --version
+
+      - name: Install dependencies
+        run: npm ci
 
       - name: Prepare Docker Compose
         run: |
@@ -91,6 +112,3 @@ jobs:
 
       - name: Run Integration Tests
         run: npm run test
-
-    #   - name: Run Integration Tests
-    #     run: npm run test:e2e
